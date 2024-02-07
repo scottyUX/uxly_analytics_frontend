@@ -1,6 +1,7 @@
 import React, {useState} from "react";
-import axios from "axios";
+//import axios from "axios";
 import Search from "./Components/Search";
+import * as Service from "../../Services/Services";
 import "./Components/home.css";
 
 function Home(){
@@ -11,13 +12,8 @@ function Home(){
         console.log("Address ", address);
         console.log("Chain: ", chain);
         setSearchInput({ address, chain });
-        try{
-            const response = await axios.get(`http://localhost:8888/active-chains/?address=${address}`);
-                setData(response);
-                console.log(data)
-        } catch(err) {
-                console.error('Error:', err);
-        }
+        setData(Service.sActiveChains(address));
+        console.log(data);
     };
     return(
         <div className="app-container">
@@ -25,9 +21,23 @@ function Home(){
             <h1>Blockchain Analytics</h1>
             <Search onSubmit={handleSearchSubmit}/>
             {data && (
-                <div>
-                    {data}
-                </div>
+                (data.length) > 0 && (
+                    <div>
+                      <p>Data:</p>
+                      <ul>
+                        {data.map((item: string, index: string) => (
+                          <li key={index}>
+                            {Object.entries(item).map(([key, value]) => (
+                              <div key={key}>
+                                <strong>{key}: </strong>
+                                {JSON.stringify(value)}
+                              </div>
+                            ))}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )
             )}
             </div>
         </div>

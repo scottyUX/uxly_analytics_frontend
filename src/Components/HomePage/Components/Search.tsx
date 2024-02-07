@@ -39,7 +39,7 @@ function Search({ onSubmit }: SearchForm): JSX.Element {
           placeholder="Chain"
           value={chain}
           onChange={handleChainChange}
-          required
+          //required
         />
       </div>
       <div>
