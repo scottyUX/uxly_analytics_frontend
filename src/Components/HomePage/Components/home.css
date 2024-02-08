@@ -1,41 +1,66 @@
 .app-container {
-    height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 50px;
-  }
-  
-  .center-content {
-    text-align: center;
-  }
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 50px;
+}
 
-  .search-form {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .search-form input {
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 10px;
-    margin: 10px;
-    font-size: 16px;
-    width: 300px;
-  }
-  
-  .search-form button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 18px;
-    width: 100px;
-  }
-  
-  .search-form button:hover {
-    background-color: #45a049;
-  }
+.center-content {
+  text-align: center;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search-form input {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 10px;
+  font-size: 16px;
+  width: 300px;
+}
+
+.search-form button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 18px;
+  width: 100px;
+}
+
+.search-form button:hover {
+  background-color: #45a049;
+}
+
+.loaded-data {
+  margin-left: 50px;
+  width: 100%;
+}
+
+.search-type-dropdown select {
+  appearance: none;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="none" d="M0 0h20v20H0z"/><path d="M7.293 8.707a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM10 14a1 1 0 110-2 1 1 0 010 2z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 15px;
+  width: 250px;
+}
+
+.search-type-dropdown select:focus {
+  outline: none;
+  border-color: #007bff;
+}
