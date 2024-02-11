@@ -23,13 +23,13 @@
   width: 100%; /* Full width */
   display: flex;
   justify-content: center; /* Center content horizontally */
-  margin-top: 160px;
+  margin-top: 260px;
   flex-grow: 1;
 }
 
 /* Login Button */
 .login-btn {
-  background-color: #EB5763; /* Adjust the color as needed */
+  background-color: #EB5763;
   color: white;
   border: none;
   cursor: pointer;
@@ -43,13 +43,28 @@
 }
 
 .login-btn:hover {
-  background-color: #d14d58; /* Hover effect color adjustment */
+  background-color: #d14d58;
   transform: translateY(-2px);
 }
 
 .login-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.5); /* Focus effect adjustment */
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.5); 
+}
+
+/* Styles for logo container */
+.logo-container {
+  position: absolute; /* Stay in place on scroll */
+  margin-left: auto;
+  top: 6px; /* Adjust buffer from the top */
+  left: 10px; /* Adjust buffer from the left */
+  z-index: 1000; /* Ensures logo stays above other content */
+}
+
+/* Styles for logo itself */
+.logo {
+  max-width: 75px; /* Adjust to make the logo smaller */
+  height: auto; /* Maintain aspect ratio */
 }
 
 
