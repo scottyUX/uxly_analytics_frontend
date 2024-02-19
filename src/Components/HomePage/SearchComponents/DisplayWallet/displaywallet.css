@@ -27,7 +27,7 @@
   }
 
   .nft-item {
-    width: calc(33.33% - 10px);
+    width: calc(30% - 10px);
     margin: 5px;
     display: flex;
     flex-direction: column;
@@ -39,7 +39,7 @@
     max-height: 300px;
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: 950px) {
     .text-container {
       display: flex;
       align-items: center;
@@ -59,6 +59,12 @@
       display: flex;
       align-items: center;
       font-size: x-small;
+    }
+
+    .nft-image,
+    .nft-video {
+      max-width: 200px;
+      max-height: 200px;
     }
 
   }
