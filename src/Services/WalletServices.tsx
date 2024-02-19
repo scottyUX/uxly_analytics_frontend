@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const HOST = "http://18.223.123.138:5000/";
-//const HOST = "http://localhost:8888";
+//const HOST = "http://18.223.123.138:5000/";
+const HOST = "http://localhost:8888";
 
 interface WalletData{
     address:string;

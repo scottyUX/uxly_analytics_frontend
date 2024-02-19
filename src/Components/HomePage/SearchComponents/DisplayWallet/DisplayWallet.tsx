@@ -1,6 +1,7 @@
 import React, {ReactNode} from 'react';
 import TruncatedText from './TruncateText';
 import "./displaywallet.css";
+import BarChart from '../../../Chart/TestChart';
 
 interface WalletData {
     address: string;
@@ -81,6 +82,7 @@ const DisplayWalletData: React.FC<DisplayWalletDataProps> = ({ walletData, chain
                                 {item}
                             </li>
                         ))}
+                        <BarChart data={} labels={}/>
                     </ul> 
                 </div>
                 <div>
