@@ -173,6 +173,18 @@
   font-weight: bold;
 }
 
+/* Styles for Graph container */
+.graph-container {
+  margin: 0 auto;
+  position: absolute; /* Stay in place on scroll */
+  margin-left: auto;
+  top: 100px; /* Adjust buffer from the top */
+  left: 100px; /* Adjust buffer from the left */
+  z-index: 1000; /* Ensures logo stays above other content */
+  margin-right: auto; 
+  margin-left: auto;
+}
+
 /*These are for the loading screen*/
 .circle-loader-container {
   display: flex;

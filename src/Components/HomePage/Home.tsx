@@ -5,9 +5,14 @@ import DisplayWalletData from "./SearchComponents/DisplayWallet/DisplayWallet";
 import DisplayMultipleWallet from "./SearchComponents/DisplayWallet/DisplayMultipleWallet";
 import Header from "./HomeComponents/HomeHeader";
 import LoadScreen from "./HomeComponents/LoadScreen";
+import StackBars from "./HomeComponents/StreamsChart";
 import "./HomeComponents/home.css";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
-interface Chain {
+interface Chain  {
   value: string;
   label: string;
 }
@@ -19,6 +24,7 @@ function Home() {
   } | null>(null);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showDashboard, setShowDashboard] = useState(false);
 
   useEffect(() => {
     if (data !== null) {
@@ -44,9 +50,17 @@ function Home() {
     setLoading(false); // Set loading state to false when submit finishes
   };
 
+  const toggleDashboard = () => {
+    setShowDashboard(!showDashboard); // Function to change the state to show the dashboard
+  };
+
+  // Consolidated return statement
   return (
     <div>
       <div className="app-container">
+        <section className="header-section">
+          <Header />
+        </section>
         <section className="header-section">
           <Header />
         </section>
@@ -59,10 +73,7 @@ function Home() {
             0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326
           </ul>
           {loading && <LoadScreen/>}
-        </div>
-      </div>
-      <div>
-        {!loading && data && (
+          {!loading && data && (
           Array.isArray(data) ? (
               data.length !== 0 ? (
                 <div className="loaded-data">
@@ -76,21 +87,30 @@ function Home() {
               )
           ):(
             data.address !== "null" ? (
-              <div className="loaded-data">
-                <DisplayWalletData
+                <div className="loaded-data">
+                  <DisplayWalletData
                   walletData={data}
                   chain={searchInput?.chain || { value: "", label: "" }}
                 />
-              </div>
+                </div>
             ) : (
               <strong className="loaded-data">Error fetching data. Try again</strong>
             )
           )
         )}
+          <button onClick={toggleDashboard}>
+          {showDashboard ? "Hide Dashboard" : "Show Dashboard"}
+          </button>
+          {showDashboard && searchInput && (
+           <StackBars address={searchInput.address} chain={searchInput.chain.value} /> // This is where the Dashboard component is rendered
+          )}
+        </div>
       </div>
+      
     </div>
   );
 }
 
 export default Home;
+
 
