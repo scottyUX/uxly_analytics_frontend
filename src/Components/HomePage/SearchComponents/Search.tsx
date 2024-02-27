@@ -1,9 +1,15 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import "../HomeComponents/home.css";
 import ChainSelect from './ChainSelect';
+import SearchSelect from './SearchSelect';
 
 interface Chain {
   value: string;
+  label: string;
+}
+
+interface Search{
+  // value: string;
   label: string;
 }
 
@@ -14,6 +20,7 @@ interface SearchForm {
 function Search({ onSubmit }: SearchForm): JSX.Element {
   const [address, setAddress] = useState<string[]>([]);
   const [chain, setChain] = useState<Chain>({ value: "", label: "" });
+  const [search, setSearch] = useState<Search>({ label: "" });
   const [fileUploaded, setFileUploaded] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
 
@@ -73,6 +80,10 @@ function Search({ onSubmit }: SearchForm): JSX.Element {
           </div>
         ) : (
           <>
+            <SearchSelect
+              value={search}
+              onChange={setSearch}
+            />
             <label htmlFor="file-upload" className="file-upload-button">
               Upload File
             </label>
