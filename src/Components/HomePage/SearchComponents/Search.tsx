@@ -8,7 +8,7 @@ interface Chain {
   label: string;
 }
 
-interface Search{
+interface SearchSelectProps {
   // value: string;
   label: string;
 }
@@ -20,7 +20,7 @@ interface SearchForm {
 function Search({ onSubmit }: SearchForm): JSX.Element {
   const [address, setAddress] = useState<string[]>([]);
   const [chain, setChain] = useState<Chain>({ value: "", label: "" });
-  const [search, setSearch] = useState<Search>({ label: "" });
+  const [searchSelect, setSearchSelect] = useState<SearchSelectProps>({ label: "" });
   const [fileUploaded, setFileUploaded] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
 
@@ -80,10 +80,12 @@ function Search({ onSubmit }: SearchForm): JSX.Element {
           </div>
         ) : (
           <>
-            <SearchSelect
-              value={search}
-              onChange={setSearch}
-            />
+            <div className='select-search'>
+              <SearchSelect
+              value={searchSelect}
+              onChange={setSearchSelect}
+              />
+            </div>
             <label htmlFor="file-upload" className="file-upload-button">
               Upload File
             </label>
@@ -96,7 +98,7 @@ function Search({ onSubmit }: SearchForm): JSX.Element {
               style={{ display: 'none' }}
               required={!address.length} 
             />
-          </>
+          </>          
         )}
         {!fileUploaded && (
           <input
