@@ -2,7 +2,6 @@ import React from 'react';
 import Select from 'react-select';
 
 interface Search{
-  // value: string;
   label: string;
 }
 

@@ -80,7 +80,7 @@ function Search({ onSubmit }: SearchForm): JSX.Element {
           </div>
         ) : (
           <>
-            <div className='select-search'>
+            <div>
               <SearchSelect
               value={searchSelect}
               onChange={setSearchSelect}
