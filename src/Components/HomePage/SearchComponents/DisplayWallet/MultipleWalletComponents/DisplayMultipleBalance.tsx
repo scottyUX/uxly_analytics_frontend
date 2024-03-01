@@ -20,9 +20,12 @@ interface ChainNetWorth{
 
 const DisplayMultipleBalance: React.FC<{wallets: WalletData[]}> = ({wallets}) => {
     return(
-        <div className="balance-graph">
-            <MultipleBalanceGraph wallets={wallets}/>
-            <TotalNativeBalanceGraph wallets={wallets}/>
+        <div>
+            <strong>Aggregate Wallet Data</strong>
+            <div className="balance-graph">
+                <MultipleBalanceGraph wallets={wallets}/>
+                <TotalNativeBalanceGraph wallets={wallets}/>
+            </div>
         </div>
     );
 };

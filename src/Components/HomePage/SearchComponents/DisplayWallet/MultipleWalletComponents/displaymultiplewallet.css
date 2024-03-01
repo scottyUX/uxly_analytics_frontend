@@ -1,3 +1,9 @@
+.address-info{
+  display: flex;
+  flex-direction: column;
+  font-size: x-large;
+}
+
 .centered-content{
     display: flex;
     justify-content: center;

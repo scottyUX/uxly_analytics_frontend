@@ -16,14 +16,23 @@ interface DisplayMultipleWalletProps {
     chain: { value: string; label: string };
 }
 
+
 const DisplayMultipleWallet: React.FC<DisplayMultipleWalletProps> = ({
     wallets,
     chain,
 }) => {
+    const totalNetWorthUSD: number = wallets.reduce((acc, wallet) => {
+        const totalNetWorthUSD = parseFloat(wallet.networth.total_networth_usd);
+        return acc + totalNetWorthUSD;
+    }, 0);
+    
     const renderWalletData = () => {
         return (
             <>
-            <strong>Aggregated Data</strong>
+            <div className="address-info">
+                <strong>Total NetWorth Across All Wallets: ${totalNetWorthUSD}</strong>
+                <br/>
+            </div>
             <DisplayMultipleBalance wallets={wallets} />
             <br/><br/>
             <strong>Popular Chains Balance Distribution</strong>
