@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
+import "./displaymultiplewallet.css";
 
 interface WalletData {
     networth: {
@@ -34,6 +35,14 @@ const BalanceDistribution: React.FC<BalanceDistributionProps> = ({ wallets }) =>
     const chartRefs = useRef<Record<string, Chart | null>>({});
 
     useEffect(() => {
+        const resizeCharts = () => {
+            Object.values(chartRefs.current).forEach(chart => {
+                if (chart) {
+                    chart.resize();
+                }
+            });
+        };
+
         const destroyCharts = () => {
             Object.values(chartRefs.current).forEach(chart => {
                 if (chart) {
@@ -128,16 +137,20 @@ const BalanceDistribution: React.FC<BalanceDistributionProps> = ({ wallets }) =>
             }
         });
 
+        // Resize charts on window resize
+        window.addEventListener('resize', resizeCharts);
+
         return () => {
             destroyCharts();
+            window.removeEventListener('resize', resizeCharts);
         };
     }, [wallets]);
 
     return (
-        <div>
+        <div className="graph-grid">
             {Array.from({ length: 4 }, (_, index) => (
-                <div key={index}>
-                    <canvas id={`chain${index + 1}-graph`} width={400} height={300}></canvas>
+                <div key={index} className="graph-container">
+                    <canvas id={`chain${index + 1}-graph`} width='400px' height='300px'></canvas>
                 </div>
             ))}
         </div>
