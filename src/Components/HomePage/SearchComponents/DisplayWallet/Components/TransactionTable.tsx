@@ -5,6 +5,7 @@ import {
   GridColDef,
   GridRowId,
   GridRowModel,
+  GridRenderCellParams
 } from "@mui/x-data-grid";
 import "../displaywallet.css";
 import MyContext from "../DisplayWallet";
@@ -18,57 +19,64 @@ interface TransactionTableProps {
   address: string;
 }
 
+
+const ScrollableCell: React.FC<GridRenderCellParams> = (params) => {
+  return (
+    <div style={{ width: '100%', overflow: 'auto', whiteSpace: 'nowrap' }}>
+      {params.value}
+    </div>
+  );
+};
+
 const TransactionTable: React.FC<TransactionTableProps> = ({
   walletData,
   address,
 }) => {
-  console.log("address", address.toLowerCase());
-  console.log(
-    "walletData.transactions",
-    walletData.transactions[0].from_address,
-  );
-  console.log(
-    "walletData.transactions = address?",
-    walletData.transactions[0].from_address === address.toLowerCase(),
-  );
   const columns: GridColDef[] = [
     {
       field: "from_address",
       headerName: "From Address",
       flex: 1,
       headerClassName: "transactionHeader",
+      renderCell: ScrollableCell, 
     },
     {
       field: "to_address",
       headerName: "To Address",
       flex: 1,
       headerClassName: "transactionHeader",
+      renderCell: ScrollableCell, 
     },
     {
       field: "value",
       headerName: "Value",
       flex: 1,
       headerClassName: "transactionHeader",
+      renderCell: ScrollableCell, 
     },
     {
       field: "decimal_value",
       headerName: "Decimal Value",
       flex: 1,
       headerClassName: "transactionHeader",
+      renderCell: ScrollableCell, 
     },
     {
       field: "block_timestamp",
       headerName: "Block Timestamp (+0)",
       flex: 1,
       headerClassName: "transactionHeader",
+      renderCell: ScrollableCell, 
     },
     {
       field: "block_hash",
       headerName: "Block Hash",
       flex: 1,
       headerClassName: "transactionHeader",
+      renderCell: ScrollableCell, 
     },
   ];
+
 
   const rows = walletData.transactions.map((transaction, index) => ({
     id: index,
