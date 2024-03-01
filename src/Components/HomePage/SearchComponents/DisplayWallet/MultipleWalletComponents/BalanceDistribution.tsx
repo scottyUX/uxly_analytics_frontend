@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
-import "./displaymultiplewallet.css";
+import './displaymultiplewallet.css';
 
 interface WalletData {
     networth: {
@@ -35,14 +35,6 @@ const BalanceDistribution: React.FC<BalanceDistributionProps> = ({ wallets }) =>
     const chartRefs = useRef<Record<string, Chart | null>>({});
 
     useEffect(() => {
-        const resizeCharts = () => {
-            Object.values(chartRefs.current).forEach(chart => {
-                if (chart) {
-                    chart.resize();
-                }
-            });
-        };
-
         const destroyCharts = () => {
             Object.values(chartRefs.current).forEach(chart => {
                 if (chart) {
@@ -76,9 +68,9 @@ const BalanceDistribution: React.FC<BalanceDistributionProps> = ({ wallets }) =>
                     '2-10': 0,
                     '10-100': 0,
                     '100-1000': 0,
-                    '1000<=': 0
+                    '1000<=': 0,
                 },
-                native_balance_formatted: '' // Added to fix the error
+                native_balance_formatted: '', // Added to fix the error
             }))
             .sort((a, b) => parseFloat(b.networth_usd) - parseFloat(a.networth_usd))
             .slice(0, 4);
@@ -109,48 +101,51 @@ const BalanceDistribution: React.FC<BalanceDistributionProps> = ({ wallets }) =>
 
         // Render charts for top chains
         topChains.forEach((chain, index) => {
-            const ctx = document.getElementById(`chain${index + 1}-graph`) as HTMLCanvasElement;
-            if (ctx) {
-                chartRefs.current[chain.chain] = new Chart(ctx, {
+            const container = document.getElementById(`chain${index + 1}-container`);
+            const canvas = document.getElementById(`chain${index + 1}-graph`) as HTMLCanvasElement;
+
+            if (container && canvas) {
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+
+                chartRefs.current[chain.chain] = new Chart(canvas, {
                     type: 'bar',
                     data: {
                         labels: Object.keys(chain.balanceRanges),
-                        datasets: [{
-                            label: `${chain.chain} Balance Distribution`,
-                            data: Object.values(chain.balanceRanges),
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
+                        datasets: [
+                            {
+                                label: `${chain.chain} Balance Distribution`,
+                                data: Object.values(chain.balanceRanges),
+                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                            },
+                        ],
                     },
                     options: {
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
+                                    stepSize: 1,
+                                },
+                            },
+                        },
+                    },
                 });
             }
         });
 
-        // Resize charts on window resize
-        window.addEventListener('resize', resizeCharts);
-
         return () => {
             destroyCharts();
-            window.removeEventListener('resize', resizeCharts);
         };
     }, [wallets]);
 
     return (
         <div className="graph-grid">
             {Array.from({ length: 4 }, (_, index) => (
-                <div key={index} className="graph-container">
-                    <canvas id={`chain${index + 1}-graph`} width='400px' height='300px'></canvas>
+                <div key={index} className="graph-container" id={`chain${index + 1}-container`}>
+                    <canvas id={`chain${index + 1}-graph`} width="100%" height="100%"></canvas>
                 </div>
             ))}
         </div>

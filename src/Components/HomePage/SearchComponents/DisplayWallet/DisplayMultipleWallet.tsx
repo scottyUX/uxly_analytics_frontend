@@ -26,7 +26,7 @@ const DisplayMultipleWallet: React.FC<DisplayMultipleWalletProps> = ({
             <strong>Aggregated Data</strong>
             <DisplayMultipleBalance wallets={wallets} />
             <br/><br/>
-            <strong>Total Distribution</strong>
+            <strong>Popular Chains Balance Distribution</strong>
             <BalanceDistribution wallets={wallets}/>
             <br/><br/>
             <strong>Transaction Data</strong>

@@ -62,7 +62,7 @@ const DisplayMultipleNetworth: React.FC<DisplayMultipleNetworthProps> = ({ walle
                         datasets: [{
                             label: 'Networth (USD)',
                             data: data,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         }]

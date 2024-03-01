@@ -38,7 +38,7 @@ const NetworthGraph: React.FC<NetworthProps> = ({ labels, chainNetWorth }) => {
                         datasets: [{
                             label: 'Chain Networth (USD)',
                             data: chainNetWorth,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         }]
