@@ -7,10 +7,8 @@ import "./displaywallet.css";
 
 interface WalletData {
   address: string;
-  activeChainsSimplified: any;
-  nativeBalance: any;
+  networth: any;
   nft: any;
-  tokenBalance: any;
   transactions: any;
   transactionsData: any;
 }
@@ -25,7 +23,6 @@ const DisplayWalletData: React.FC<DisplayWalletDataProps> = ({
   chain,
 }) => {
   console.log("Wallet data is:", walletData);
-  console.log("Tokens are:", walletData.tokenBalance);
   const renderWalletData = () => {
     return (
       <>
@@ -51,16 +48,6 @@ const DisplayWalletData: React.FC<DisplayWalletDataProps> = ({
         </div>
         <div>
           <DisplayNFTs walletData={walletData} />
-        </div>
-        <div>
-          <span style={{ fontWeight: "bold" }}>Token Balance:</span>
-          <ul>
-            {walletData.tokenBalance &&
-              Array.isArray(walletData.tokenBalance) &&
-              walletData.tokenBalance.map((item: any, index: number) => (
-                <li key={index}>{item}</li>
-              ))}
-          </ul>
         </div>
       </>
     );

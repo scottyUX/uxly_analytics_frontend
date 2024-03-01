@@ -5,10 +5,8 @@ import BalanceDistribution from "./MultipleWalletComponents/BalanceDistribution"
 
 interface WalletData {
     address: string;
-    activeChainsSimplified: any;
-    nativeBalance: any;
+    networth: any;
     nft: any;
-    tokenBalance: any;
     transactions: any;
     transactionsData: any;
   }
