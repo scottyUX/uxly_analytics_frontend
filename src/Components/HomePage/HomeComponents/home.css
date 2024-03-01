@@ -198,3 +198,15 @@
     transform: rotate(360deg);
   }
 }
+
+/* Streams components */
+.streams-header-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /*Or 'flex-end' if you want it to stick to the right */
+  margin-left: auto; /* push the title to the right if 'justify-content' is not used */
+  margin-left: 130px;
+  margin-top: -5px;
+  font-size: 25px;
+}
+
