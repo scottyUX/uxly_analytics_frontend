@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import DisplayStreamsData from "./StreamsGraph"
 import Header from "../HomePage/HomeComponents/HomeHeader";
+import DisplayStreamsTimeline from "./StreamsTimeline";
+import DisplayStreamsDataLogarithmic from "./StreamsGraph_log"
+import DisplayStreamsTimelineLogarithmic from "./StreamsTimelineLogarithmic";
 
 interface StreamData {
   time: number[];
@@ -542,37 +545,28 @@ const Streams: React.FC = () => {
       console.log(`Socket connected: ${socket.id}`);
     });
 
-    socket.on("USDT", (dataString) => {
-      try{
-        const data = JSON.parse(dataString);
-      console.log("USDT", data);
-
-      setRawD(data);
-      if (data && data.time && Array.isArray(data.senders)) {
-        setRawData(prevData => {
-          const size = 100; 
-          let newData = initializeStreamData();
-
-          // Map over the incoming data and copy it to the new structure
-          data.time.forEach((item: number, index: number) => {
-            if (index < size) {
-              newData.time[index] = item;
-              newData.values[index] = data.values[index] || "0";
-              newData.decimalValues[index] = data.decimalValues[index] || "0";
-              newData.senders[index] = data.senders[index] || "";
-              newData.receivers[index] = data.receivers[index] || "";
-              // Calculate the average value if needed or use the one provided
-              newData.averageValue = data.averageValue || prevData.averageValue;
+    socket.on("USDT", (data) => {
+        console.log("USDT", data);
+        setRawD(data);
+        
+        if (data && data.time && Array.isArray(data.time)) {
+          setRawData(prevData => {
+            const size = 100; 
+            let newData = initializeStreamData();
+            
+            for (let index = 0; index < size; index++)   {
+                newData.time[index] = data.time[index];
+                newData.values[index] = data.value[index] || prevData.values[index] || "0";
+                newData.decimalValues[index] = data.decimalValue[index] || prevData.decimalValues[index] || "0";
+                newData.senders[index] = data.to[index] || prevData.senders[index] || "";
+                newData.receivers[index] = data.from[index] || prevData.receivers[index] || "";
+              
             }
-          });
+            newData.averageValue = data.averageDecimalValue || prevData.averageValue;
 
-          return newData;
-        });
-      }
-      }
-      catch (error) {
-        console.error("Failed to parse data", error);
-      }
+            return newData;
+          });
+        }
     });
 
     // Clean up the effect by disconnecting the socket when the component unmounts
@@ -583,28 +577,25 @@ const Streams: React.FC = () => {
   }, []); // The empty dependency array ensures the effect runs only once on mount
 
   return (
-    <div>
+    <div className="page-container">
         <section className="header-section">
           <Header />
         </section>
         <section className="streams-header-section">
       <h1 >Streams</h1>
       </section>
+      <div className="content-container">
       {rawData && (
         <div>
           <h2>
-          <DisplayStreamsData rawData={rawData} /> 
           <DisplayStreamsData rawData={testData} /> 
-          {rawData && (
-        <div>
-          <h2>
-            Received Data:<pre>{JSON.stringify(rawData, null, 2)}</pre>
+          <DisplayStreamsTimeline rawData={testData} /> 
+          <DisplayStreamsDataLogarithmic rawData={testData} /> 
+          <DisplayStreamsTimelineLogarithmic rawData={testData} /> 
           </h2>
         </div>
       )}
-          </h2>
-        </div>
-      )}
+    </div>
     </div>
   );
 };
