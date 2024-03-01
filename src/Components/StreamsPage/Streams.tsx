@@ -3,6 +3,8 @@ import io from "socket.io-client";
 import DisplayStreamsData from "./StreamsGraph"
 import Header from "../HomePage/HomeComponents/HomeHeader";
 import DisplayStreamsTimeline from "./StreamsTimeline";
+import DisplayStreamsDataLogarithmic from "./StreamsGraph_log"
+import DisplayStreamsTimelineLogarithmic from "./StreamsTimelineLogarithmic";
 
 interface StreamData {
   time: number[];
@@ -588,6 +590,8 @@ const Streams: React.FC = () => {
           <h2>
           <DisplayStreamsData rawData={testData} /> 
           <DisplayStreamsTimeline rawData={testData} /> 
+          <DisplayStreamsDataLogarithmic rawData={testData} /> 
+          <DisplayStreamsTimelineLogarithmic rawData={testData} /> 
           </h2>
         </div>
       )}

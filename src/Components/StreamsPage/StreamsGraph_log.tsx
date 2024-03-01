@@ -30,7 +30,7 @@ interface CustomTooltipProps {
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const value = typeof data.Value === 'number' ? data.Value.toFixed(2) : 'N/A';
+      const value = typeof data.Value === 'number' ? Math.log10(data.Value.toFixed(2)) : 'N/A';
       const decimalValue = typeof data.decimalValue === 'number' ? data.decimalValue.toFixed(2) : 'N/A';
       const averageValue = payload[0].payload.averageValue?.toFixed(2) || 'N/A';
       const sender = payload[0].payload.Sender || 'Unknown'; 
@@ -56,7 +56,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
     return null;
   };
 
-const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
+const DisplayStreamsDataLogarithmic: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
    
 
   const { time, values, decimalValues, senders, receivers , averageValue} = rawData;
@@ -67,7 +67,7 @@ const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
     const intValue = parseInt(cleanedValue, 10);
     return{
     time: new Date(timestamp).toLocaleTimeString(),
-    Value: !isNaN(intValue) ? intValue : 0,
+    Value: !isNaN(intValue) ? Math.log10(intValue) : 0,
     Sender: senders[index],
     Receiver: receivers[index],
     decimalValue: parseFloat(decimalValues[index]) || 0,
@@ -81,19 +81,18 @@ const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
         <section className="streams-header-section">
         <h2 style={{ fontSize: '14px' }}>Current Transaction Average: {averageValue.toFixed(2)}</h2>
       </section>
-              <ResponsiveContainer width="100%" height={700}>
-      <ComposedChart data={chartData} margin={{ top: 0, right: 50, left: 50, bottom: 50, }}>
+              <ResponsiveContainer width="100%" height={800}>
+      <ComposedChart data={chartData} margin={{ top: 120, right: 50, left: 50, bottom: 50, }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" angle={-45} textAnchor="end" height={70} fontSize= '13px'/>
         <YAxis fontSize= '14px' type="number"
                domain={['auto', 'auto']}//{[0, 1.05e6]} // Set the upper bound to 1.05M domain={[0.45e6, 4.5e6]} 
                allowDataOverflow={true} 
-               tickCount={11}
-               tickFormatter={(value) => `${value / 1e6}M`}/>
+               tickCount={14}/>
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar dataKey="decimalValue" fill="#EB5763" name="Smart Contract Transactions" barSize={5}/>
-        <Line type="monotone" dataKey="decimalValue" name="Trend" stroke="#82ca9d" strokeWidth={4}/>
+        <Bar dataKey="Value" fill="#EB5763" name="Smart Contract Transactions" barSize={5}/>
+        <Line type="monotone" dataKey="Value" name="Lgarithmic Trend" stroke="#82ca9d" strokeWidth={4}/>
         {/* Additional lines or bars can be added here 8884d8 */}
       </ComposedChart>
       </ResponsiveContainer>
@@ -101,4 +100,4 @@ const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
   );
 };
 
-export default DisplayStreamsData;
+export default DisplayStreamsDataLogarithmic;
