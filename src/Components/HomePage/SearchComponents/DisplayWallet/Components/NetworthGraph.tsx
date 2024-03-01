@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Chart, { ChartOptions } from 'chart.js/auto';
-import "../displaywallet.css";
+import '../displaywallet.css';
 
 interface NetworthProps {
     labels: string[];
@@ -8,11 +8,12 @@ interface NetworthProps {
 }
 
 const NetworthGraph: React.FC<NetworthProps> = ({ labels, chainNetWorth }) => {
+    const chartContainerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const chartRef = useRef<Chart>();
 
     useEffect(() => {
-        if (canvasRef.current) {
+        if (canvasRef.current && chartContainerRef.current) {
             const ctx = canvasRef.current.getContext('2d');
             if (ctx) {
                 // Ensure the previous chart instance is destroyed
@@ -20,12 +21,14 @@ const NetworthGraph: React.FC<NetworthProps> = ({ labels, chainNetWorth }) => {
                     chartRef.current.destroy();
                 }
 
-                // Calculate width as twice the height (300px)
-                const width = 600;
+                // Calculate width and height based on container size
+                const container = chartContainerRef.current;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
 
-                // Set canvas dimensions
+                // Update canvas size
                 canvasRef.current.width = width;
-                canvasRef.current.height = 300;
+                canvasRef.current.height = height;
 
                 // Create a new chart instance
                 chartRef.current = new Chart(ctx, {
@@ -33,7 +36,7 @@ const NetworthGraph: React.FC<NetworthProps> = ({ labels, chainNetWorth }) => {
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Networth (USD)',
+                            label: 'Chain Networth (USD)',
                             data: chainNetWorth,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
@@ -41,6 +44,8 @@ const NetworthGraph: React.FC<NetworthProps> = ({ labels, chainNetWorth }) => {
                         }]
                     },
                     options: {
+                        maintainAspectRatio: false, // Allow the chart to fill the container
+                        responsive: true,
                         scales: {
                             y: {
                                 type: 'logarithmic', // Set y-axis scale to logarithmic
@@ -65,7 +70,7 @@ const NetworthGraph: React.FC<NetworthProps> = ({ labels, chainNetWorth }) => {
     }, [labels, chainNetWorth]);
 
     return (
-        <div style={{ height: '400px', width: '500px' }}>
+        <div ref={chartContainerRef} style={{ height: '300px', width: '100%' }}>
             <canvas ref={canvasRef}></canvas>
         </div>
     );

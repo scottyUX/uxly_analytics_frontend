@@ -21,11 +21,12 @@ const NativeBalanceGraph: React.FC<NativeBalanceGraphPROPS> = ({ labels, nativeB
                     chartRef.current.destroy();
                 }
 
-                const width = 600; // Use container width
-                const height = 300; // Set desired height
-
-                canvasRef.current.width = width;
-                canvasRef.current.height = height;
+                const container = containerRef.current;
+                const canvas = canvasRef.current;
+        
+                if (!container || !canvas) return;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
 
                 chartRef.current = new Chart(ctx, {
                     type: 'bar',
@@ -59,7 +60,7 @@ const NativeBalanceGraph: React.FC<NativeBalanceGraphPROPS> = ({ labels, nativeB
                                 type: 'logarithmic', // Logarithmic scale
                                 ticks: {
                                     callback: (value: string | number) => {
-                                        return '$' + value.toLocaleString();
+                                        return value.toLocaleString();
                                     }
                                 }
                             }
@@ -87,7 +88,7 @@ const NativeBalanceGraph: React.FC<NativeBalanceGraphPROPS> = ({ labels, nativeB
     }, [labels, nativeBalance, nativeBalanceUSD, tokenBalanceUSD]);
 
     return (
-        <div ref={containerRef} style={{ height: '400px', width: '500px' }}>
+        <div ref={containerRef} style={{ height: '100%', width: '100%' }}>
             <canvas ref={canvasRef}></canvas>
         </div>
     );
