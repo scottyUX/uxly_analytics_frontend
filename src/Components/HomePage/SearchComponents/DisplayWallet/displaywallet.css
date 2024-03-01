@@ -6,7 +6,7 @@
   
   .address-info{
     display: flex;
-    align-items: center;
+    flex-direction: column;
     font-size: x-large;
   }
   

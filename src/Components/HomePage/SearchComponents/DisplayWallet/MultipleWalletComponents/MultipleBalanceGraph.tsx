@@ -1,107 +1,103 @@
-import React, { useEffect, useRef, useMemo } from 'react';
-import Chart, { ChartConfiguration } from 'chart.js/auto';
+import React, { useEffect, useRef } from 'react';
+import Chart, { ChartOptions } from 'chart.js/auto';
 import "./displaymultiplewallet.css";
 
-interface BalanceData {
+interface WalletData {
+    networth: {
+        chains: ChainNetWorth[];
+    };
+}
+
+interface ChainNetWorth {
     chain: string;
-    totalBalance: number;
-    median: number;
+    networth_usd: string;
 }
 
-interface MultipleBalanceGraphProps {
-    balances: BalanceData[];
+interface DisplayMultipleNetworthProps {
+    wallets: WalletData[];
 }
 
-const MultipleBalanceGraph: React.FC<MultipleBalanceGraphProps> = ({ balances }) => {
-    const chartRef = useRef<HTMLCanvasElement>(null);
-    const chartInstance = useRef<Chart>();
-
-    const chartConfig = useMemo<ChartConfiguration>(() => ({
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Total Balance',
-                data: [],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Median',
-                data: [],
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    ticks: {
-                        color: 'black' // Set x-axis text color to black
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: 'black' // Set y-axis text color to black
-                    }
-                }
-            },
-            plugins: {
-                tooltip: {
-                    enabled: true,
-                    mode: 'index',
-                    intersect: false,
-                }
-            }
-        }
-    }), []);
+const DisplayMultipleNetworth: React.FC<DisplayMultipleNetworthProps> = ({ wallets }) => {
+    const chartContainerRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const chartRef = useRef<Chart>();
 
     useEffect(() => {
-        if (chartRef.current) {
-            const ctx = chartRef.current.getContext('2d');
+        if (canvasRef.current && chartContainerRef.current) {
+            const ctx = canvasRef.current.getContext('2d');
             if (ctx) {
-                if (chartInstance.current) {
-                    chartInstance.current.destroy(); // Destroy the previous chart instance
+                // Ensure the previous chart instance is destroyed
+                if (chartRef.current) {
+                    chartRef.current.destroy();
                 }
-                chartInstance.current = new Chart(ctx, chartConfig);
+
+                const chainsNetworth: Record<string, number> = {};
+
+                // Calculate total networth_usd per chain
+                wallets.forEach(wallet => {
+                    wallet.networth.chains.forEach(chain => {
+                        if (!chainsNetworth[chain.chain]) {
+                            chainsNetworth[chain.chain] = 0;
+                        }
+                        chainsNetworth[chain.chain] += parseFloat(chain.networth_usd);
+                    });
+                });
+
+                // Extract labels and data for Chart.js
+                const labels = Object.keys(chainsNetworth);
+                const data = Object.values(chainsNetworth);
+
+                // Update canvas size
+                const container = chartContainerRef.current;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                canvasRef.current.width = width;
+                canvasRef.current.height = height;
+
+                // Create a new chart instance
+                chartRef.current = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Networth (USD)',
+                            data: data,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        scales: {
+                            y: {
+                                type: 'logarithmic',
+                                ticks: {
+                                    callback: (value: string | number) => {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    } as ChartOptions
+                });
             }
         }
 
+        // Cleanup function
         return () => {
-            if (chartInstance.current) {
-                chartInstance.current.destroy(); // Clean up on unmount
+            if (chartRef.current) {
+                chartRef.current.destroy();
             }
         };
-    }, [balances, chartConfig]);
+    }, [wallets]);
 
-    // Update chart data with new balances
-    useEffect(() => {
-        if (chartInstance.current) {
-            // Filter out chains with total balance of 0, except for the first chain
-            const filteredBalances = balances.filter((balance, index) => index === 0 || balance.totalBalance !== 0);
-    
-            // Sort filtered balances array by total balance in descending order, excluding the first chain
-            const sortedBalances = [filteredBalances[0], ...filteredBalances.slice(1).sort((a, b) => b.totalBalance - a.totalBalance)];
-    
-            const totalBalanceData = sortedBalances.map(balance => balance.totalBalance); // Use total balance for the bar graph
-            const medianData = sortedBalances.map(balance => balance.median); // Use median for the second dataset
-            const labels = sortedBalances.map(balance => balance.chain); // Use chain names for labels
-    
-            chartInstance.current.data.datasets[0].data = totalBalanceData;
-            chartInstance.current.data.datasets[1].data = medianData;
-            chartInstance.current.data.labels = labels;
-            chartInstance.current.update();
-        }
-    }, [balances]);
-    
-    
-    
     return (
-        <div className='balancemedian-graph'>
-            <canvas ref={chartRef} style={{ maxWidth: '100%', maxHeight: '100%' }}/>
+        <div ref={chartContainerRef} style={{ height: '300px', width: '100%' }}>
+            <canvas ref={canvasRef}></canvas>
         </div>
     );
-};
+}
 
-export default MultipleBalanceGraph;
+export default DisplayMultipleNetworth;

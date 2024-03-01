@@ -9,7 +9,7 @@ interface WalletData {
     nft: any;
     transactions: any;
     transactionsData: any;
-  }
+}
 
 interface DisplayMultipleWalletProps {
     wallets: WalletData[];
@@ -27,7 +27,6 @@ const DisplayMultipleWallet: React.FC<DisplayMultipleWalletProps> = ({
             <DisplayMultipleBalance wallets={wallets} />
             <br/><br/>
             <strong>Native Balance Distribution</strong>
-            <BalanceDistribution wallets={wallets}/>
             <br/><br/>
             <strong>Transaction Data</strong>
             <MultipleTransactionDetailsTable wallets={wallets} />

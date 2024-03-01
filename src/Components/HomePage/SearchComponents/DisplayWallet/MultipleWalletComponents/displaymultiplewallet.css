@@ -31,6 +31,15 @@
     margin: 0 10px; /* Adjust spacing between columns */
 }
 
+.balance-graph{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 800px;
+  height: 400px;
+}
+
 canvas {
     width: 100%;
     height: 100%;

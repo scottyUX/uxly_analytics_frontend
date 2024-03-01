@@ -28,6 +28,7 @@ const DisplayWalletData: React.FC<DisplayWalletDataProps> = ({
       <>
         <div className="address-info">
           <strong>{walletData.address}'s Data</strong>
+          <strong>Total Wallet NetWorth: ${walletData.networth.total_networth_usd}</strong>
         </div>
         <br />
         <DisplayBalance walletData={walletData} />
