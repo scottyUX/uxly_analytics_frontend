@@ -1,143 +1,145 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
-import "./displaymultiplewallet.css";
 
 interface WalletData {
-    address: string;
-    activeChainsSimplified: any;
-    nativeBalance: { chain: string; balance: string }[];
-    nft: any;
-    tokenBalance: any;
-    transactions: any;
-    transactionsData: any;
+    networth: {
+        chains: ChainNetWorth[];
+    };
 }
 
-const BalanceDistribution: React.FC<{ wallets: WalletData[] }> = ({ wallets }) => {
-    const chartRefs = useRef<Array<HTMLCanvasElement | null>>([]);
-    const chartInstances = useRef<Array<Chart | null>>([]);
+interface ChainNetWorth {
+    chain: string;
+    networth_usd: string;
+    native_balance_formatted: string;
+}
+
+interface BalanceRange {
+    '< 0.5': number;
+    '0.5-2': number;
+    '2-10': number;
+    '10-100': number;
+    '100-1000': number;
+    '1000<=': number;
+}
+
+interface TopChain extends ChainNetWorth {
+    balanceRanges: BalanceRange;
+}
+
+interface BalanceDistributionProps {
+    wallets: WalletData[];
+}
+
+const BalanceDistribution: React.FC<BalanceDistributionProps> = ({ wallets }) => {
+    const chartRefs = useRef<Record<string, Chart | null>>({});
 
     useEffect(() => {
-        // Clear previous charts
-        chartInstances.current.forEach(chartInstance => {
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-        });
+        const destroyCharts = () => {
+            Object.values(chartRefs.current).forEach(chart => {
+                if (chart) {
+                    chart.destroy();
+                }
+            });
+        };
 
-        // Calculate total native balance for each chain
-        const chainTotalBalances: { [key: string]: number } = {};
+        destroyCharts();
+
+        const chainsNetworth: Record<string, number> = {};
+
+        // Calculate total net worth for each chain
         wallets.forEach(wallet => {
-            wallet.nativeBalance.forEach(({ chain, balance }) => {
-                chainTotalBalances[chain] = (chainTotalBalances[chain] || 0) + parseFloat(balance);
+            wallet.networth.chains.forEach(chain => {
+                const networth = parseFloat(chain.networth_usd);
+                if (!isNaN(networth)) {
+                    chainsNetworth[chain.chain] = (chainsNetworth[chain.chain] || 0) + networth;
+                }
             });
         });
 
-        // Get the top 4 chains based on total native balance
-        const topChains = Object.keys(chainTotalBalances)
-            .sort((a, b) => chainTotalBalances[b] - chainTotalBalances[a])
+        // Sort chains based on total net worth
+        const topChains: TopChain[] = Object.keys(chainsNetworth)
+            .map(chain => ({
+                chain,
+                networth_usd: chainsNetworth[chain].toString(),
+                balanceRanges: {
+                    '< 0.5': 0,
+                    '0.5-2': 0,
+                    '2-10': 0,
+                    '10-100': 0,
+                    '100-1000': 0,
+                    '1000<=': 0
+                },
+                native_balance_formatted: '' // Added to fix the error
+            }))
+            .sort((a, b) => parseFloat(b.networth_usd) - parseFloat(a.networth_usd))
             .slice(0, 4);
 
-        // Render charts for the top 4 chains
-        topChains.forEach((chain, index) => {
-            const chartRef = chartRefs.current[index];
-            if (chartRef) {
-                const chainBalances = getChainBalances(chain);
-                if (chainBalances.length > 0) {
-                    const ctx = chartRef.getContext('2d');
-                    if (ctx) {
-                        const chartInstance = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: getRangesLabels(),
-                                datasets: [{
-                                    label: chain,
-                                    data: getDistribution(chainBalances),
-                                    backgroundColor: chainBalances.map(getBarColor),
-                                    borderColor: 'rgba(54, 162, 235, 1)', // Border color
-                                    borderWidth: 1, // Bold border width
-                                    borderRadius: 3, // Border radius
-                                }]
-                            },
-                            options: {
-                                scales: {
-                                    y: {
-                                        type: 'linear',
-                                        beginAtZero: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Users'
-                                        },
-                                        ticks: {
-                                            stepSize: 1
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                        chartInstances.current[index] = chartInstance;
+        // Calculate balance ranges for each chain
+        topChains.forEach(chain => {
+            wallets.forEach(wallet => {
+                wallet.networth.chains.forEach(chainData => {
+                    if (chainData.chain === chain.chain) {
+                        const balance = parseFloat(chainData.native_balance_formatted);
+                        if (balance < 0.5) {
+                            chain.balanceRanges['< 0.5']++;
+                        } else if (balance >= 0.5 && balance < 2) {
+                            chain.balanceRanges['0.5-2']++;
+                        } else if (balance >= 2 && balance < 10) {
+                            chain.balanceRanges['2-10']++;
+                        } else if (balance >= 10 && balance < 100) {
+                            chain.balanceRanges['10-100']++;
+                        } else if (balance >= 100 && balance < 1000) {
+                            chain.balanceRanges['100-1000']++;
+                        } else {
+                            chain.balanceRanges['1000<=']++;
+                        }
                     }
-                }
-            }
-        });
-    }); // Ensure useEffect runs only when wallets change
-
-    // Function to get balances for a specific chain
-    const getChainBalances = (chain: string) => {
-        const balances: number[] = [];
-        wallets.forEach(wallet => {
-            wallet.nativeBalance.forEach(({ chain: chainName, balance }) => {
-                if (chainName === chain) {
-                    balances.push(parseFloat(balance));
-                }
+                });
             });
         });
-        return balances;
-    };
 
-    // Function to get predefined ranges
-    const getRangesLabels = () => [
-        '0 to 0.5',
-        '0.5 to 1',
-        '1 to 5',
-        '5 to 20',
-        '20+'
-    ];
+        // Render charts for top chains
+        topChains.forEach((chain, index) => {
+            const ctx = document.getElementById(`chain${index + 1}-graph`) as HTMLCanvasElement;
+            if (ctx) {
+                chartRefs.current[chain.chain] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(chain.balanceRanges),
+                        datasets: [{
+                            label: `${chain.chain} Balance Distribution`,
+                            data: Object.values(chain.balanceRanges),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
-    // Function to calculate distribution for a specific chain
-    const getDistribution = (balances: number[]) => {
-        return [
-            balances.filter(balance => balance >= 0 && balance <= 0.5).length,
-            balances.filter(balance => balance > 0.5 && balance <= 1).length,
-            balances.filter(balance => balance > 1 && balance <= 5).length,
-            balances.filter(balance => balance > 5 && balance <= 20).length,
-            balances.filter(balance => balance > 20).length
-        ];
-    };
-
-    // Function to generate bar color based on balance
-    const getBarColor = (balance: number) => {
-        const opacity = 0.2 + 0.8 * (balance / 100); // Adjust as needed
-        return `rgba(54, 162, 235, ${opacity})`; // Adjust color as needed
-    };
+        return () => {
+            destroyCharts();
+        };
+    }, [wallets]);
 
     return (
-        <div className="chart-container">
-            <div className="row">
-                <div className="col">
-                    <canvas ref={el => chartRefs.current[0] = el}></canvas>
+        <div>
+            {Array.from({ length: 4 }, (_, index) => (
+                <div key={index}>
+                    <canvas id={`chain${index + 1}-graph`} width={400} height={300}></canvas>
                 </div>
-                <div className="col">
-                    <canvas ref={el => chartRefs.current[1] = el}></canvas>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    <canvas ref={el => chartRefs.current[2] = el}></canvas>
-                </div>
-                <div className="col">
-                    <canvas ref={el => chartRefs.current[3] = el}></canvas>
-                </div>
-            </div>
+            ))}
         </div>
     );
 };
