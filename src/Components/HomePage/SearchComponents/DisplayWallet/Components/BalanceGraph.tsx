@@ -41,6 +41,13 @@ const BarGraph: React.FC<BarGraphProps> = ({ data, labels }) => {
                     enabled: true,
                     mode: 'index',
                     intersect: false,
+                },
+                legend: {
+                    labels: {
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
                 }
             }
         }
@@ -65,8 +72,8 @@ const BarGraph: React.FC<BarGraphProps> = ({ data, labels }) => {
     }, [data, labels, chartConfig]);
 
     // Filter out subsequent labels with corresponding values of 0
-    const filteredData = data.map((value, index) => (index === 0 || value !== 0 ? value : null)).filter(value => value !== null);
-    const filteredLabels = labels.map((label, index) => (index === 0 || data[index] !== 0 ? label : null)).filter(label => label !== null);
+    const filteredData = data.map((value, index) => (index === 0 || value >= 0.05 ? value : null)).filter(value => value !== null);
+    const filteredLabels = labels.map((label, index) => (index === 0 || data[index] >= 0.05 ? label : null)).filter(label => label !== null);
 
     // Combine filtered data and labels into an array of objects
     const combinedData = filteredData.map((value, index) => ({ value, label: filteredLabels[index] }));
@@ -89,7 +96,7 @@ const BarGraph: React.FC<BarGraphProps> = ({ data, labels }) => {
 
     return (
         <div className='balance-graph'>
-            <canvas ref={chartRef} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+            <canvas ref={chartRef} style={{ maxWidth: '100%' }} />
         </div>
     );
 };
