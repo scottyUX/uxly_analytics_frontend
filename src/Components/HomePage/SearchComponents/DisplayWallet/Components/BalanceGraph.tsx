@@ -96,7 +96,7 @@ const BarGraph: React.FC<BarGraphProps> = ({ data, labels }) => {
 
     return (
         <div className='balance-graph'>
-            <canvas ref={chartRef} style={{ maxWidth: '100%' }} />
+            <canvas ref={chartRef} style={{ maxWidth: '100%'}} />
         </div>
     );
 };
