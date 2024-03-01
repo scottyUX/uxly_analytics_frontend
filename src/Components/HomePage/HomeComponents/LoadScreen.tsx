@@ -1,12 +1,12 @@
 import React from "react";
 import "./home.css";
 
-const LoadScreen: React.FC = () => {
+const LoadScreen: React.ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
   return (
-    <div className="circle-loader-container">
+    <div ref={ref} className="circle-loader-container">
       <div className="circle-loader"></div>
     </div>
   );
 };
 
-export default LoadScreen;
+export default React.forwardRef(LoadScreen);
