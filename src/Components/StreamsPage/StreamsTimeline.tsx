@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+// ... (other imports)
 import {
     ComposedChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
 } from 'recharts';
@@ -56,33 +57,60 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
     return null;
   };
 
-const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
-   
+const DisplayStreamsTimeline: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
+  // Destructure your rawData here
+  const { time, values, decimalValues, senders, receivers, averageValue } = rawData;
 
-  const { time, values, decimalValues, senders, receivers , averageValue} = rawData;
-  //const averageData = [{ time: 'Average', value: averageValue }];
+  // Initialize chartData state
+  const [chartData, setChartData] = useState([] as any[]);
 
-  const chartData = time.map((timestamp, index) => {
-    const cleanedValue = values[index].replace(/[^0-9.-]+/g, "");
-    const intValue = parseInt(cleanedValue, 10);
-    return{
-    time: new Date(timestamp).toLocaleTimeString(),
-    Value: Math.log10(!isNaN(intValue) ? intValue : 0), // values[index], //
-    Sender: senders[index],
-    Receiver: receivers[index],
-    decimalValue: parseFloat(decimalValues[index]) || 0,
-    averageValue: averageValue
+  // Function to transform rawData to chartData format
+  const transformData = (data: StreamData) => {
+    return data.time.map((timestamp, index) => {
+      const cleanedValue = data.values[index].replace(/[^0-9.-]+/g, "");
+      const intValue = parseInt(cleanedValue, 10);
+      return {
+        time: new Date(timestamp).toLocaleTimeString(),
+        Value: Math.log10(!isNaN(intValue) ? intValue : 0),
+        Sender: data.senders[index],
+        Receiver: data.receivers[index],
+        decimalValue: parseFloat(data.decimalValues[index]) || 0,
+        averageValue: data.averageValue
+      };
+    });
   };
-  });
+
+  // Function to update chartData on an interval
+  const updateChartData = () => {
+    const newChartData = transformData(rawData);
+
+    // Update the state with the new chart data
+    setChartData(newChartData);
+  };
+
+  useEffect(() => {
+    // Update chart data immediately and then set interval
+    updateChartData();
+    const intervalId = setInterval(() => {
+      // Append the current time with no new value to the chart data
+      setChartData(prevData => [...prevData, {
+        time: new Date().toLocaleTimeString(),
+        Value: prevData.length ? prevData[prevData.length - 1].Value : 0,  // Use the last known value
+        Sender: '',
+        Receiver: '',
+        decimalValue: 0,
+        averageValue: rawData.averageValue
+      }]);
+    }, 1000);
+
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [rawData]);
 
   return (
-    
-    <div style={{ width: '100%', height: '500px', marginTop: '2rem' }}>
-        <section className="streams-header-section">
-        <h2 style={{ fontSize: '14px' }}>Current Transaction Average: {averageValue.toFixed(2)}</h2>
-      </section>
+    <div style={{ width: '100%', height: '500px', marginTop: '20rem' }}>
               <ResponsiveContainer width="100%" height={900}>
-      <ComposedChart data={chartData} margin={{ top: 0, right: 50, left: 50, bottom: 50, }}>
+      <ComposedChart data={chartData} margin={{ top: 200, right: 50, left: 50, bottom: 50, }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" angle={-45} textAnchor="end" height={70} fontSize= '13px'/>
         <YAxis fontSize= '14px' type="number"
@@ -92,8 +120,8 @@ const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
                tickFormatter={(value) => `${value / 1e6}M`}/>
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar dataKey="Value" fill="#EB5763" name="Smart Contract Transactions" barSize={5}/>
-        <Line type="monotone" dataKey="Value" name="Trend" stroke="#82ca9d" strokeWidth={4}/>
+        <Bar dataKey="Value" fill="#EB5763" name="Smart Contract Transactions" width={4}/>
+        <Line type="monotone" dataKey="Value" name="Timeline" stroke="#82ca9d" strokeWidth={4}/>
         {/* Additional lines or bars can be added here 8884d8 */}
       </ComposedChart>
       </ResponsiveContainer>
@@ -101,4 +129,4 @@ const DisplayStreamsData: React.FC<DisplayStreamsDataProps> = ({ rawData }) => {
   );
 };
 
-export default DisplayStreamsData;
+export default DisplayStreamsTimeline;
